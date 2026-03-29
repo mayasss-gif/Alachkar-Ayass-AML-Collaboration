@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alachkar Lab × Ayass Bioscience — AML Collaboration</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:#0a0e27;color:#fff;overflow:hidden;height:100vh;width:100vw}
+.slide{position:absolute;top:0;left:0;width:100vw;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;opacity:0;transform:scale(0.95);transition:all 0.8s cubic-bezier(0.4,0,0.2,1);pointer-events:none;padding:60px}
+.slide.active{opacity:1;transform:scale(1);pointer-events:all}
+.slide.prev{opacity:0;transform:translateX(-100px) scale(0.9)}
+.controls{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:100}
+.dot{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,0.25);cursor:pointer;transition:all 0.3s}
+.dot.active{background:#64b5f6;transform:scale(1.3)}
+.nav-btn{position:fixed;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;width:50px;height:50px;border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all 0.3s;z-index:100}
+.nav-btn:hover{background:rgba(255,255,255,0.2)}
+.nav-btn.left{left:20px}.nav-btn.right{right:20px}
+.slide-num{position:fixed;top:20px;right:30px;font-size:0.8rem;color:rgba(255,255,255,0.4);z-index:100}
+.logo{position:fixed;top:20px;left:30px;font-size:0.7rem;color:rgba(255,255,255,0.4);z-index:100}
+.audio-btn{position:fixed;top:15px;right:120px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#fff;padding:6px 14px;border-radius:20px;cursor:pointer;font-size:0.75rem;display:flex;align-items:center;gap:6px;transition:all 0.3s;z-index:100;font-weight:600}
+.audio-btn:hover{background:rgba(255,255,255,0.2)}
+.audio-btn.active{background:rgba(100,181,246,0.15);border-color:rgba(100,181,246,0.5);color:#64b5f6}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(100,181,246,0.3)}50%{box-shadow:0 0 40px rgba(100,181,246,0.6)}}
+@keyframes slideRight{from{transform:translateX(-60px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes countUp{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
+.slide.active .anim-1{animation:fadeUp 0.8s 0.2s both}
+.slide.active .anim-2{animation:fadeUp 0.8s 0.4s both}
+.slide.active .anim-3{animation:fadeUp 0.8s 0.6s both}
+.slide.active .anim-4{animation:fadeUp 0.8s 0.8s both}
+.slide.active .anim-5{animation:fadeUp 0.8s 1.0s both}
+.slide.active .anim-c{animation:countUp 0.6s 0.8s both}
+.slide.active .anim-g{animation:glow 3s 0.5s infinite}
+.mega-title{font-size:3.5rem;font-weight:900;letter-spacing:-2px;line-height:1.1;text-align:center}
+.mega-title span{background:linear-gradient(135deg,#64b5f6,#ce93d8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.subtitle{font-size:1.2rem;color:rgba(255,255,255,0.7);text-align:center;margin-top:16px;font-weight:300;max-width:700px}
+.badge{display:inline-block;padding:6px 16px;border-radius:20px;font-size:0.75rem;font-weight:600;margin:4px}
+.badge-blue{background:rgba(100,181,246,0.15);color:#64b5f6;border:1px solid rgba(100,181,246,0.3)}
+.badge-purple{background:rgba(206,147,216,0.15);color:#ce93d8;border:1px solid rgba(206,147,216,0.3)}
+.badge-green{background:rgba(129,199,132,0.15);color:#81c784;border:1px solid rgba(129,199,132,0.3)}
+.badge-red{background:rgba(239,154,154,0.15);color:#ef9a9a;border:1px solid rgba(239,154,154,0.3)}
+.badge-orange{background:rgba(255,183,77,0.15);color:#ffb74d;border:1px solid rgba(255,183,77,0.3)}
+.stat-row{display:flex;gap:30px;justify-content:center;flex-wrap:wrap;margin:30px 0}
+.stat-item{text-align:center;min-width:100px}
+.stat-num{font-size:2.5rem;font-weight:900;line-height:1}
+.stat-num.blue{color:#64b5f6}.stat-num.purple{color:#ce93d8}.stat-num.green{color:#81c784}.stat-num.orange{color:#ffb74d}.stat-num.red{color:#ef9a9a}
+.stat-label{font-size:0.7rem;color:rgba(255,255,255,0.5);margin-top:6px;text-transform:uppercase;letter-spacing:1px}
+.card-grid{display:grid;gap:14px;max-width:1100px;width:100%}
+.g2{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr 1fr}.g4{grid-template-columns:1fr 1fr 1fr 1fr}
+.card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:22px;backdrop-filter:blur(10px)}
+.card h3{font-size:0.95rem;margin-bottom:6px;font-weight:700}
+.card p{font-size:0.8rem;color:rgba(255,255,255,0.6);line-height:1.5}
+.card.highlight{border-color:rgba(100,181,246,0.3);background:rgba(100,181,246,0.06)}
+.card.purple-hl{border-color:rgba(206,147,216,0.3);background:rgba(206,147,216,0.06)}
+.card.green-hl{border-color:rgba(129,199,132,0.3);background:rgba(129,199,132,0.06)}
+.card.red-hl{border-color:rgba(239,154,154,0.3);background:rgba(239,154,154,0.06)}
+table{width:100%;border-collapse:collapse;font-size:0.78rem;max-width:1000px}
+th{text-align:left;padding:8px 12px;color:rgba(255,255,255,0.5);border-bottom:1px solid rgba(255,255,255,0.1);font-weight:600;font-size:0.68rem;text-transform:uppercase;letter-spacing:1px}
+td{padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);color:rgba(255,255,255,0.8)}
+tr:hover td{background:rgba(255,255,255,0.03)}
+.network-box{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:center}
+.pathway{padding:14px 20px;border-radius:12px;text-align:center;min-width:100px}
+.pathway h4{font-size:0.82rem;margin-bottom:3px}
+.pathway p{font-size:0.65rem;opacity:0.6}
+.arrow{font-size:1.5rem;color:rgba(255,255,255,0.3)}
+@media(max-width:768px){.mega-title{font-size:2rem}.stat-num{font-size:1.6rem}.card-grid.g3,.card-grid.g4,.card-grid.g2{grid-template-columns:1fr}.slide{padding:30px}}
+</style>
+</head>
+<body>
+
+<!-- SLIDE 1: TITLE -->
+<div class="slide active" id="s0">
+  <div class="anim-1" style="margin-bottom:16px">
+    <span class="badge badge-blue">Alachkar Lab — USC</span>
+    <span class="badge badge-purple">Ayass Bioscience — BiRAGAS</span>
+  </div>
+  <h1 class="mega-title anim-2">AML Collaboration<br><span>Framework</span></h1>
+  <p class="subtitle anim-3">Where 15 Years of Leukemia Biology Meets<br>837-Module Autonomous AI Discovery</p>
+  <div class="stat-row anim-4">
+    <div class="stat-item"><div class="stat-num blue">837+</div><div class="stat-label">AI Modules</div></div>
+    <div class="stat-item"><div class="stat-num purple">88.9B</div><div class="stat-label">Combinations</div></div>
+    <div class="stat-item"><div class="stat-num green">23</div><div class="stat-label">Causality Modules</div></div>
+    <div class="stat-item"><div class="stat-num orange">10</div><div class="stat-label">AML Targets</div></div>
+    <div class="stat-item"><div class="stat-num red">28%</div><div class="stat-label">AML 5-yr Survival</div></div>
+  </div>
+  <div class="anim-5" style="margin-top:20px">
+    <span class="badge badge-green">7-Phase Causal Proof</span>
+    <span class="badge badge-blue">Cross-Modal CRISPR</span>
+    <span class="badge badge-red">NIH R01 Aligned ($1.79M)</span>
+    <span class="badge badge-purple">Hallucination-Shielded</span>
+  </div>
+</div>
+
+<!-- SLIDE 2: WHY THIS COLLABORATION -->
+<div class="slide" id="s1">
+  <h1 class="mega-title anim-1" style="font-size:2.3rem">Why <span>This Collaboration</span> Matters</h1>
+  <div class="card-grid g2 anim-2" style="margin-top:28px">
+    <div class="card highlight">
+      <h3 style="color:#64b5f6">Alachkar Lab Brings</h3>
+      <p>&#8226; 15 years AML domain expertise (66+ publications)<br>&#8226; FLT3/CD99/SPARC/APOC2 target biology<br>&#8226; TCR immunogenomics + pyTCR platform<br>&#8226; Anti-CD99/FLT3 ELP nanoparticle therapeutics<br>&#8226; NIH R01 funding ($1.79M) for FLT3-ITD neoantigens<br>&#8226; Wet-lab validation in AML cell lines</p>
+    </div>
+    <div class="card purple-hl">
+      <h3 style="color:#ce93d8">Ayass BiRAGAS Brings</h3>
+      <p>&#8226; 7-phase causal validation (23 modules)<br>&#8226; 88.9B cross-modal CRISPR combinations<br>&#8226; 7-method knockout ensemble (210K configs)<br>&#8226; Hallucination-shielded QC (7 categories)<br>&#8226; Per-patient causal DAG stratification<br>&#8226; 12-model synergy prediction engine</p>
+    </div>
+  </div>
+  <div class="card anim-3 green-hl" style="max-width:700px;text-align:center;margin-top:20px">
+    <h3 style="color:#81c784">The Gap We Fill Together</h3>
+    <p style="font-size:0.9rem;color:rgba(255,255,255,0.85)">Alachkar Lab discovers AML targets through biology. BiRAGAS <strong style="color:#fff">proves they cause disease</strong> through causal inference. Together: <strong style="color:#81c784">causally validated targets + computationally optimized therapeutics</strong>.</p>
+  </div>
+</div>
+
+<!-- SLIDE 3: AML TARGETS -->
+<div class="slide" id="s2">
+  <h1 class="mega-title anim-1" style="font-size:2rem">10 AML Targets &#215; <span>BiRAGAS</span></h1>
+  <p class="subtitle anim-2" style="font-size:0.95rem">Every Alachkar Lab target mapped to specific BiRAGAS engines</p>
+  <div class="card-grid g2 anim-3" style="margin-top:20px">
+    <div class="card red-hl">
+      <h3 style="color:#ef9a9a">&#9888; FLT3 / FLT3-ITD <span class="badge badge-red" style="font-size:0.6rem">CRITICAL</span></h3>
+      <p>KnockoutEngine (7-method) &#8226; CombinationEngine (FLT3+X synergy) &#8226; EditingEngine (FLT3-ITD guides) &#8226; ResistanceMechID &#8226; RNABaseEdit (edit FLT3-ITD mRNA)</p>
+    </div>
+    <div class="card red-hl">
+      <h3 style="color:#ef9a9a">&#128300; TCR Repertoire <span class="badge badge-red" style="font-size:0.6rem">CRITICAL</span></h3>
+      <p>CohortStratifier (TCR-based clustering) &#8226; DAGComparator (TCR-DAGs across subtypes) &#8226; ConservedMotifs &#8226; R01 aligned ($1.79M)</p>
+    </div>
+    <div class="card" style="border-color:rgba(255,183,77,0.3)">
+      <h3 style="color:#ffb74d">&#128171; CD99 <span class="badge badge-orange" style="font-size:0.6rem">HIGH</span></h3>
+      <p>Cas9 KO + Cas13 KD dual design &#8226; CD99+FLT3 combination synergy &#8226; SafetyAssessor for normal hematopoiesis</p>
+    </div>
+    <div class="card" style="border-color:rgba(255,183,77,0.3)">
+      <h3 style="color:#ffb74d">&#9733; SPARC <span class="badge badge-orange" style="font-size:0.6rem">HIGH</span></h3>
+      <p>DAGBuilder: SPARC&#8594;ILK&#8594;AKT&#8594;&#946;-catenin chain &#8226; CounterfactualSim do(SPARC=KO) &#8226; Combination with AKT inhibitors</p>
+    </div>
+    <div class="card" style="border-color:rgba(255,183,77,0.3)">
+      <h3 style="color:#ffb74d">&#9764; APOC2-CD36 <span class="badge badge-orange" style="font-size:0.6rem">HIGH</span></h3>
+      <p>Metabolic network DAG &#8226; Double-KO counterfactual &#8226; RNA base editing of APOC2 mRNA &#8226; Zumberge funded ($100K)</p>
+    </div>
+    <div class="card" style="border-color:rgba(255,183,77,0.3)">
+      <h3 style="color:#ffb74d">&#10070; miR-155 <span class="badge badge-orange" style="font-size:0.6rem">HIGH</span></h3>
+      <p>Cas13 KD of mature miRNA + Cas9 KO of pre-miR locus &#8226; Cross-modal DNA&#215;RNA &#8226; Synergy with FLT3 inhibitors</p>
+    </div>
+  </div>
+  <div class="anim-4" style="margin-top:14px;text-align:center;font-size:0.78rem;color:rgba(255,255,255,0.4)">+ MELK/TOPK &#8226; WT1 &#8226; Vimentin &#8226; Mitochondrial Genes</div>
+</div>
+
+<!-- SLIDE 4: 7-PHASE CAUSALITY -->
+<div class="slide" id="s3">
+  <h1 class="mega-title anim-1" style="font-size:2rem">7-Phase <span>Causality</span> for AML</h1>
+  <p class="subtitle anim-2" style="font-size:0.9rem">23 modules proving AML targets CAUSE disease — not just accompany it</p>
+  <div class="card-grid g4 anim-3" style="margin-top:20px">
+    <div class="card" style="border-left:3px solid #64b5f6"><h3 style="font-size:0.82rem">Phase 1</h3><p>DAGBuilder + MRValidator<br><small>Build AML causal DAG from 7 evidence sources</small></p></div>
+    <div class="card" style="border-left:3px solid #4fc3f7"><h3 style="font-size:0.82rem">Phase 2</h3><p>Centrality + TargetScorer<br><small>FLT3=Tier1, APOC2=Tier2, VIM=Tier3</small></p></div>
+    <div class="card" style="border-left:3px solid #4dd0e1"><h3 style="font-size:0.82rem">Phase 3</h3><p>Causality + Direction + Confounding<br><small>Confidence gate &#8805;0.65</small></p></div>
+    <div class="card" style="border-left:3px solid #4db6ac"><h3 style="font-size:0.82rem">Phase 4</h3><p>Counterfactual + Resistance<br><small>do(FLT3=KO) &#8594; predict compensation</small></p></div>
+    <div class="card anim-4" style="border-left:3px solid #81c784"><h3 style="font-size:0.82rem">Phase 5</h3><p>7D TargetRanker + Safety<br><small>Rank FLT3, CD99, SPARC, APOC2</small></p></div>
+    <div class="card anim-4" style="border-left:3px solid #aed581"><h3 style="font-size:0.82rem">Phase 6</h3><p>Patient Stratification<br><small>AML subtypes + TCR integration</small></p></div>
+    <div class="card anim-4" style="border-left:3px solid #ce93d8"><h3 style="font-size:0.82rem">Phase 7</h3><p>Evidence Audit + LLM<br><small>Publication-ready causal reports</small></p></div>
+    <div class="card anim-4 anim-g" style="border-left:3px solid #81c784;background:rgba(129,199,132,0.06)"><h3 style="font-size:0.82rem;color:#81c784">Hallucination Shield</h3><p>7 detection categories<br><small>QC-gated, never propagates errors</small></p></div>
+  </div>
+</div>
+
+<!-- SLIDE 5: CRISPR ENGINES -->
+<div class="slide" id="s4">
+  <h1 class="mega-title anim-1" style="font-size:2rem"><span>CRISPR</span> Engines for AML</h1>
+  <div class="card-grid g2 anim-2" style="margin-top:24px">
+    <div class="card highlight">
+      <h3 style="color:#64b5f6">Guide Design + Knockout</h3>
+      <table>
+        <tr><td><strong>EditingEngine</strong></td><td>SpCas9 + Cas13d guides for FLT3, CD99, SPARC, APOC2, miR-155</td></tr>
+        <tr><td><strong>KnockoutEngine</strong></td><td>7-method ensemble: 210,859 AML-specific configs</td></tr>
+        <tr><td><strong>RNABaseEdit</strong></td><td>dCas13-ADAR2: edit FLT3-ITD mRNA (A&#8594;I) without DNA cut</td></tr>
+        <tr><td><strong>NonCodingEngine</strong></td><td>Cas13 KD of miR-155, CRISPRi of PVT1 lncRNA</td></tr>
+      </table>
+    </div>
+    <div class="card purple-hl">
+      <h3 style="color:#ce93d8">Combination + Synergy</h3>
+      <table>
+        <tr><td><strong>CombinationEngine</strong></td><td>12 models: FLT3+CD99, SPARC+AKT, APOC2+CD36 synergy</td></tr>
+        <tr><td><strong>MegaScale</strong></td><td>22.2B DNA + 22.2B RNA + 44.5B cross-modal pairs</td></tr>
+        <tr><td><strong>ResistanceMechID</strong></td><td>Predict FLT3 inhibitor resistance: MAPK, PI3K bypass</td></tr>
+        <tr><td><strong>SafetyAssessor</strong></td><td>5D: essentiality, pleiotropy, off-target, toxicity, window</td></tr>
+      </table>
+      <div style="display:flex;justify-content:space-between;margin-top:12px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.03)">
+        <div style="text-align:center"><div style="font-size:1.2rem;font-weight:800;color:#64b5f6">22.2B</div><div style="font-size:0.58rem;color:rgba(255,255,255,0.4)">DNA&#215;DNA</div></div>
+        <div style="text-align:center"><div style="font-size:1.2rem;font-weight:800;color:#ce93d8">22.2B</div><div style="font-size:0.58rem;color:rgba(255,255,255,0.4)">RNA&#215;RNA</div></div>
+        <div style="text-align:center"><div style="font-size:1.2rem;font-weight:800;color:#81c784">44.5B</div><div style="font-size:0.58rem;color:rgba(255,255,255,0.4)">DNA&#215;RNA</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SLIDE 6: WORK PLAN -->
+<div class="slide" id="s5">
+  <h1 class="mega-title anim-1" style="font-size:2rem">14-Month <span>Work Plan</span></h1>
+  <table class="anim-2" style="margin-top:24px">
+    <thead><tr><th>Phase</th><th>Timeline</th><th>Activity</th><th>Key Deliverable</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Setup</strong></td><td style="color:#81c784">Month 1</td><td>Data sharing, BiRAGAS config for AML</td><td>MOU + configured instance</td></tr>
+      <tr><td><strong>Target Discovery</strong></td><td style="color:#81c784">M 2-3</td><td>Build AML causal DAG, MR validation, target ranking</td><td>Causally validated target list</td></tr>
+      <tr><td><strong>CRISPR Design</strong></td><td style="color:#64b5f6">M 3-4</td><td>SpCas9 + Cas13d guides for top targets</td><td>50-100 guide library</td></tr>
+      <tr><td><strong>KO Prediction</strong></td><td style="color:#64b5f6">M 4-5</td><td>7-method ensemble, resistance forecasting</td><td>Ranked KO predictions</td></tr>
+      <tr><td><strong>Combinations</strong></td><td style="color:#ce93d8">M 5-7</td><td>12-model synergy: FLT3+CD99, SPARC+AKT, miR-155+FLT3</td><td>Top 20 synergistic pairs</td></tr>
+      <tr><td><strong>Wet-Lab</strong></td><td style="color:#ffb74d">M 7-10</td><td>Alachkar Lab validates in MOLM-13, MV4-11, KG-1</td><td>Validated targets + combos</td></tr>
+      <tr><td><strong>Stratification</strong></td><td style="color:#ce93d8">M 8-11</td><td>TCR integration, patient subgrouping, neoantigens</td><td>AML stratification model</td></tr>
+      <tr><td><strong>Publications</strong></td><td style="color:#ef9a9a">M 10-14</td><td>2-3 manuscripts + joint R01 application</td><td>Blood, Leukemia, Nat Methods</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- SLIDE 7: PUBLICATIONS -->
+<div class="slide" id="s6">
+  <h1 class="mega-title anim-1" style="font-size:2rem">Publication & <span>Grant</span> Strategy</h1>
+  <div class="card-grid g2 anim-2" style="margin-top:24px">
+    <div class="card highlight"><h3>Paper 1: Causal Target Discovery</h3><p><strong style="color:#64b5f6">Blood / Leukemia</strong> (M10-12)<br>7-phase causal validation of AML targets; causal vs correlational comparison; novel targets beyond known drivers</p></div>
+    <div class="card purple-hl"><h3>Paper 2: Cross-Modal CRISPR Combos</h3><p><strong style="color:#ce93d8">Nature Methods / Blood Cancer Discov</strong> (M12-14)<br>DNA KO + RNA KD combinations; experimental validation in FLT3-ITD cells</p></div>
+    <div class="card" style="border-color:rgba(255,183,77,0.3)"><h3>Paper 3: TCR × Causal Networks</h3><p><strong style="color:#ffb74d">Cancer Immunol Res / Immunity</strong> (M14-16)<br>TCR features in causal DAG; FLT3-ITD neoantigens; R01 aligned</p></div>
+    <div class="card" style="border-color:rgba(129,199,132,0.3)"><h3>Paper 4: RNA Base Editing FLT3-ITD</h3><p><strong style="color:#81c784">Blood Advances / Mol Therapy</strong> (M14-18)<br>dCas13-ADAR2 editing of FLT3-ITD mRNA; reversible correction</p></div>
+  </div>
+  <div class="card anim-3 anim-g green-hl" style="max-width:700px;text-align:center;margin-top:20px">
+    <h3 style="color:#81c784">Joint NIH R01 Grant</h3>
+    <p style="font-size:0.95rem;color:rgba(255,255,255,0.85)"><strong>Agentic AI-Driven Causal Discovery and CRISPR Validation in AML</strong><br>$2-3M over 5 years &mdash; Alachkar (PI), Ayass (co-PI/subcontract)</p>
+  </div>
+</div>
+
+<!-- SLIDE 8: CLOSING -->
+<div class="slide" id="s7">
+  <div class="anim-1"><span class="badge badge-green">The Future of AML Research</span></div>
+  <h1 class="mega-title anim-2" style="margin-top:16px;font-size:2.8rem">Two Labs. <span>One Mission.</span></h1>
+  <p class="subtitle anim-3">From causal proof to combination therapy — ending AML starts here.</p>
+  <div class="stat-row anim-4">
+    <div class="stat-item"><div class="stat-num blue anim-c">10</div><div class="stat-label">AML Targets</div></div>
+    <div class="stat-item"><div class="stat-num purple anim-c">88.9B</div><div class="stat-label">Combinations</div></div>
+    <div class="stat-item"><div class="stat-num green anim-c">23</div><div class="stat-label">Causal Modules</div></div>
+    <div class="stat-item"><div class="stat-num orange anim-c">4</div><div class="stat-label">Joint Papers</div></div>
+    <div class="stat-item"><div class="stat-num red anim-c">$3M+</div><div class="stat-label">Grant Target</div></div>
+  </div>
+  <div class="anim-5" style="margin-top:36px;text-align:center">
+    <p style="font-size:1.3rem;font-weight:700;color:#64b5f6">Alachkar Lab (USC) × Ayass Bioscience</p>
+    <p style="font-size:0.85rem;color:rgba(255,255,255,0.5);margin-top:8px">Confidential &mdash; March 2026</p>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<button class="audio-btn" id="audioBtn" onclick="toggleAudio()">&#128263; Audio Off</button>
+<div class="logo">Alachkar Lab × Ayass Bioscience</div>
+<div class="slide-num" id="slideNum">1 / 8</div>
+<button class="nav-btn left" onclick="prev()">&#9664;</button>
+<button class="nav-btn right" onclick="next()">&#9654;</button>
+<div class="controls" id="dots"></div>
+
+<script>
+let current=0;const total=8;const slides=document.querySelectorAll('.slide');const dotsEl=document.getElementById('dots');
+let audioEnabled=false;let currentAudio=null;
+function toggleAudio(){audioEnabled=!audioEnabled;const btn=document.getElementById('audioBtn');if(audioEnabled){btn.classList.add('active');btn.innerHTML='&#128264; Audio On';playAudioForSlide(current)}else{btn.classList.remove('active');btn.innerHTML='&#128263; Audio Off';if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}}}
+function playAudioForSlide(n){if(currentAudio){currentAudio.pause();currentAudio.currentTime=0}if(!audioEnabled)return;currentAudio=new Audio(`slide_${n+1}.mp3`);currentAudio.play().catch(e=>console.log("Audio blocked:",e))}
+for(let i=0;i<total;i++){const d=document.createElement('div');d.className='dot'+(i===0?' active':'');d.onclick=()=>goTo(i);dotsEl.appendChild(d)}
+function goTo(n){slides[current].classList.remove('active');slides[current].classList.add('prev');current=n;slides.forEach((s,i)=>{if(i!==current){s.classList.remove('active');s.classList.remove('prev')}});slides[current].classList.add('active');document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===current));document.getElementById('slideNum').textContent=(current+1)+' / '+total;playAudioForSlide(current)}
+function next(){goTo((current+1)%total)}function prev(){goTo((current-1+total)%total)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next()}if(e.key==='ArrowLeft')prev()});
+</script>
+</body>
+</html>
